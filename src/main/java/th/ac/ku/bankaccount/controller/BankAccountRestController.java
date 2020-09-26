@@ -3,6 +3,7 @@ package th.ac.ku.bankaccount.controller;
 import org.springframework.web.bind.annotation.*;
 import th.ac.ku.bankaccount.data.BankAccountRepository;
 import th.ac.ku.bankaccount.model.BankAccount;
+import th.ac.ku.bankaccount.model.Transaction;
 
 import java.util.List;
 
@@ -37,12 +38,23 @@ public class BankAccountRestController {
         return repository.findById(bankAccount.getId()).get();
     }
 
-    @PutMapping("/{id}")
-    public BankAccount update(@PathVariable int id,
-                              @RequestBody BankAccount bankAccount) {
+    @PutMapping("deposit/{id}")
+    public BankAccount deposit(@PathVariable int id,
+                              @RequestBody Transaction transaction) {
         BankAccount record = repository.findById(id).get();
-        record.setBalance(bankAccount.getBalance());
+        record.setBalance(record.getBalance() + transaction.getValue());
         repository.save(record);
+
+        return record;
+    }
+
+    @PutMapping("withdraw/{id}")
+    public BankAccount withdraw(@PathVariable int id,
+                              @RequestBody Transaction transaction) {
+        BankAccount record = repository.findById(id).get();
+        record.setBalance(record.getBalance() - transaction.getValue());
+        repository.save(record);
+
         return record;
     }
 
@@ -52,6 +64,8 @@ public class BankAccountRestController {
         repository.deleteById(id);
         return record;
     }
+
+
 
 }
 
